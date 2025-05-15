@@ -1,0 +1,25 @@
+
+services:
+  gateway:
+    build:
+      context: ./gateway-service
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+
+  auth:
+    build:
+      context: ./auth-service
+    ports:
+      - "3001:3000"
+    environment:
+      - PORT=3000
+
+  event:
+    build:
+      context: ./event-service
+    ports:
+      - "3002:3000"
+    environment:
+      - PORT=3000
