@@ -5,7 +5,11 @@ import {
     HttpStatus,
     Post,
     Req,
+    Get,
+    Put,
+    Delete,
     UseGuards,
+    Param,
 } from '@nestjs/common';
 import { Roles } from '../role/roles.decorator';
 import { Role } from '../role/role.enum';
@@ -52,6 +56,37 @@ export class ProxyAuthController {
         console.log('/refresh', TokenDto);
         const { data } = await axios.post(`${AUTH_SERVICE_URL}/refresh`, TokenDto, {
         });
+        return data;
+    }
+
+    @Get('gifts')
+    async getGifts() {
+        const { data } = await axios.get(`${AUTH_SERVICE_URL}/gifts`);
+        return data;
+    }
+
+    @Get('gifts/:id')
+    async getGift(@Param('id') id: string) {
+        const { data } = await axios.get(`${AUTH_SERVICE_URL}/gifts/${id}`);
+        return data;
+    }
+
+    @Post('gifts')
+    @HttpCode(HttpStatus.CREATED)
+    async createGift(@Body() body: any) {
+        const { data } = await axios.post(`${AUTH_SERVICE_URL}/gifts`, body);
+        return data;
+    }
+
+    @Put('gifts/:id')
+    async updateGift(@Param('id') id: string, @Body() body: any) {
+        const { data } = await axios.put(`${AUTH_SERVICE_URL}/gifts/${id}`, body);
+        return data;
+    }
+
+    @Delete('gifts/:id')
+    async deleteGift(@Param('id') id: string) {
+        const { data } = await axios.delete(`${AUTH_SERVICE_URL}/gifts/${id}`);
         return data;
     }
 }
