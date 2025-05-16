@@ -3,7 +3,7 @@ import {
     Controller, Get,
     HttpCode,
     HttpStatus,
-    Post,
+    Post, Put,
     Req,
     UseGuards,
 } from '@nestjs/common';
@@ -26,4 +26,21 @@ export class ProxyEventController {
         const { data } = await axios.get(`${EVENT_SERVICE_URL}/`);
         return data;
     }
+
+    @Post()
+    @HttpCode(HttpStatus.CREATED)
+    async createEvent(@Body() body: any) {
+        const { data } = await axios.post(`${EVENT_SERVICE_URL}/`, body);
+        return data;
+    }
+
+    @Put(':id')
+    @HttpCode(HttpStatus.OK)
+    async updateEvent(@Body() body: any, @Req() req: Request) {
+        const { id } = req.params;
+        const { data } = await axios.put(`${EVENT_SERVICE_URL}/${id}`, body);
+        return data;
+    }
+
+
 }
