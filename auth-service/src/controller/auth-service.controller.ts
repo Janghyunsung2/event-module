@@ -16,7 +16,7 @@ import { TokenDto} from "../dto/token.dto";
 export class AuthServiceController {
     constructor(private readonly authService: AuthService) {}
 
-    @Post('register')
+    @Post('users')
     @UsePipes(new ValidationPipe({ whitelist: true }))
     async register(@Body() registerDto: RegisterDto) {
         console.log("register 진입", registerDto);

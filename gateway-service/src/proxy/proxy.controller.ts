@@ -1,8 +1,6 @@
 import {All, Controller, Req, Res, UnauthorizedException, ForbiddenException, UseGuards} from '@nestjs/common';
 import { Request, Response } from 'express';
 import axios, { AxiosRequestConfig } from 'axios';
-import { ACCESS_RULES } from '../common/access/access.rules';
-import { Role } from '../role/role.enum';
 import {AccessGuard} from "../common/access/access.guard";
 import {JwtWsGuard} from "../jwt/jwt-ws.guard";
 

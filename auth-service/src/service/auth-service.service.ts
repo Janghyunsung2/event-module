@@ -53,6 +53,11 @@ export class AuthService {
         const { accessToken, refreshToken } = this.generateTokens(user);
         await this.storeRefreshToken(refreshToken, user.id.toString());
 
+        //로그인 시간 기록
+        await this.userModel.findByIdAndUpdate(user._id, {
+            loginAt: new Date(),
+        });
+
         return { accessToken, refreshToken };
     }
 
@@ -113,7 +118,7 @@ export class AuthService {
     }
 
     async register(userDto: RegisterDto) {
-        const { email, password, role, ...rest } = userDto;
+        const { email, password, ...rest } = userDto;
 
         const existingUser = await this.userModel.findOne({ email });
         if (existingUser) {
@@ -125,7 +130,6 @@ export class AuthService {
         const user = new this.userModel({
             email,
             password: hashedPassword,
-            role,
             ...rest,
         });
 

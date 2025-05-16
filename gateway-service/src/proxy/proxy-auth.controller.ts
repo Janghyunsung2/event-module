@@ -19,10 +19,10 @@ const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3000'
 
 @Controller('auth')
 export class ProxyAuthController {
-    @Post('register')
+    @Post('users')
     @HttpCode(HttpStatus.CREATED)
     async register(@Body() body: any) {
-        const { data } = await axios.post(`${AUTH_SERVICE_URL}/register`, body);
+        const { data } = await axios.post(`${AUTH_SERVICE_URL}/users`, body);
         return data;
     }
 
