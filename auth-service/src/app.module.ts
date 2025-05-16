@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthServiceController } from './controller/auth-service.controller';
@@ -9,12 +8,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constans';
 import {RedisModule, RedisModuleOptions} from '@nestjs-modules/ioredis';
 import { User, UserSchema } from './schemas/user.schema';
+import {AppController} from "./app.controller";
+import {AppService} from "./app.service";
+import * as process from "node:process";
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true, // 전역 설정
   }),
-    MongooseModule.forRoot('mongodb://localhost:27017/authdb'),
+    MongooseModule.forRoot(process.env.MONGODB_URL || 'mongodb://localhost:27017/authdb'),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     JwtModule.register({
       secret: jwtConstants.secret,
@@ -30,7 +32,7 @@ import { User, UserSchema } from './schemas/user.schema';
       }),
     }),
   ],
-  controllers: [AuthServiceController],
-  providers: [AuthService],
+  controllers: [AuthServiceController, AppController],
+  providers: [AuthService, AppService],
 })
 export class AppModule {}

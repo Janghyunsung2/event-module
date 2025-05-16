@@ -9,6 +9,8 @@ import { Redis } from 'ioredis';
 import * as bcrypt from 'bcrypt';
 import {RegisterDto} from "../dto/register.dto";
 import { LoginDto } from "../dto/login.dto";
+import { TokenDto } from "../dto/token.dto";
+
 
 @Injectable()
 export class AuthService {
@@ -21,17 +23,24 @@ export class AuthService {
 
     private generateTokens(user: User) {
         const payload = { sub: user.id, email: user.email, role: user.role };
-        const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+        const accessToken = this.jwtService.sign(payload, { expiresIn: '10m' });
         const refreshToken = crypto.randomUUID();
         return { accessToken, refreshToken, payload };
     }
 
     private async storeRefreshToken(token: string, userId: string) {
-        await this.redis.set(`refresh:${token}`, userId, 'EX', 60 * 60 * 3); // 3시간
+        await this.redis.set(`refresh:${token}`, userId, 'EX', 60 * 60 * 60); // 1시간
     }
 
     private async deleteRefreshToken(token: string) {
         await this.redis.del(`refresh:${token}`);
+    }
+
+    private async verifyRefreshToken(refreshToken : string, payload : any) {
+        const userId = await this.redis.get(`refresh:${refreshToken}`);
+        if (!userId) throw new UnauthorizedException('Invalid token');
+        if (userId !== payload.sub) throw new UnauthorizedException('Invalid token');
+        return userId;
     }
 
     async login(loginDto: LoginDto) {
@@ -55,19 +64,52 @@ export class AuthService {
         return { message: 'Successfully logged out' };
     }
 
-    async refresh(refreshToken: string) {
-        const userId = await this.redis.get(`refresh:${refreshToken}`);
-        if (!userId) throw new UnauthorizedException('Invalid token');
+    async refresh(TokenDto: TokenDto) {
+        const accessToken = TokenDto.accessToken;
+        const refreshToken = TokenDto.refreshToken;
+        console.log('TokenDto', TokenDto);
+        console.log('accessToken', accessToken);
+        console.log('refreshToken', refreshToken);
 
-        const user = await this.userModel.findById(userId);
-        if (!user) throw new UnauthorizedException('Invalid token');
+        if (!accessToken || !refreshToken) {
+            throw new UnauthorizedException('accessToken or refreshToken is missing');
+        }
 
-        await this.deleteRefreshToken(refreshToken);
+        try {
+            const payload = this.jwtService.decode(accessToken) as any;
+            console.log('payload', payload);
+            if (!payload || typeof payload !== 'object') {
+                console.log('Invalid payload');
+                throw new UnauthorizedException('Invalid access token');
+            }
 
-        const { accessToken, refreshToken: newRefreshToken } = this.generateTokens(user);
-        await this.storeRefreshToken(newRefreshToken, user.id.toString());
+            const userId = await this.verifyRefreshToken(refreshToken, payload);
+            console.log('userId', userId);
+            const user = await this.userModel.findById(userId);
+            console.log('user', user);
 
-        return { accessToken, refreshToken: newRefreshToken };
+            if (!user) {
+                throw new UnauthorizedException('User not found');
+            }
+
+            //리프레시 삭제
+            await this.deleteRefreshToken(refreshToken);
+            console.log('리프레시 삭제', refreshToken);
+
+
+            const { accessToken: newAccessToken, refreshToken: newRefreshToken } = this.generateTokens(user);
+            console.log("리프레시 재발급")
+            await this.storeRefreshToken(newRefreshToken, user.id.toString());
+
+            return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+        } catch (e) {
+            if (e instanceof UnauthorizedException) {
+                console.error(e);
+                throw e;
+            }
+            console.error(e);
+            throw new UnauthorizedException('Invalid token');
+        }
     }
 
     async register(userDto: RegisterDto) {
@@ -75,6 +117,7 @@ export class AuthService {
 
         const existingUser = await this.userModel.findOne({ email });
         if (existingUser) {
+            console.log('existingUser', existingUser);
             throw new BadRequestException('User already exists');
         }
 

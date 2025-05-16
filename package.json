@@ -1,4 +1,12 @@
 {
   "private": false,
-  "workspaces": ["gateway", "auth", "event"]
+  "workspaces": [
+    "gateway",
+    "auth",
+    "event"
+  ],
+  "dependencies": {
+    "@nestjs/axios": "^4.0.0",
+    "axios": "^1.9.0"
+  }
 }

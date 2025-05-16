@@ -1,15 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
-
+import { GatewayModule } from './gateway.module';
+import {ProxyAuthController} from "./proxy/proxy-auth.controller";
+import {ProxyEventController} from "./proxy/proxy-event.controller";
 
 @Module({
-  imports: [ConfigModule.forRoot({
-    isGlobal: true, // 전역 설정
-  }),
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [GatewayModule],
+    controllers: [ProxyAuthController, ProxyEventController],
 })
 export class AppModule {}
