@@ -1,22 +1,29 @@
-import {Injectable, UnauthorizedException} from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 import axios from "axios";
-
 
 @Injectable()
 export class ExternalAuthService {
-    constructor(private readonly httpService: HttpService) {}
+    private readonly authServiceUrl: string;
+
+    constructor(
+        private readonly httpService: HttpService,
+        private readonly configService: ConfigService,
+    ) {
+        this.authServiceUrl = this.configService.get<string>('AUTH_SERVICE_URL');
+    }
 
     async refresh(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
         const { data } = await this.httpService
-            .post('http://localhost:3000/refresh', { refreshToken })
+            .post(`${this.authServiceUrl}/refresh`, { refreshToken })
             .toPromise();
         return data;
     }
 
     async verifyToken(token: string): Promise<any> {
         try {
-            const response = await axios.get(`http://localhost:3000/verify`, {
+            const response = await axios.get(`${this.authServiceUrl}/verify`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -28,10 +35,11 @@ export class ExternalAuthService {
     }
 
     async validateUserByPayload(payload: any) {
-        const { email } = payload;
+        const { sub } = payload;
+
 
         try {
-            const response = await axios.get(`http://localhost:3000/auth/users/email/${email}`);
+            const response = await axios.get(`${this.authServiceUrl}/users/${sub}`);
             const user = response.data;
 
             if (!user) {

@@ -5,7 +5,11 @@ import {
     HttpStatus,
     Post,
     Req,
+    Get,
+    Put,
+    Delete,
     UseGuards,
+    Param,
 } from '@nestjs/common';
 import { Roles } from '../role/roles.decorator';
 import { Role } from '../role/role.enum';
@@ -19,18 +23,16 @@ const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3000'
 
 @Controller('auth')
 export class ProxyAuthController {
-    @Post('register')
+    @Post('users')
     @HttpCode(HttpStatus.CREATED)
     async register(@Body() body: any) {
-        const { data } = await axios.post(`${AUTH_SERVICE_URL}/register`, body);
+        const { data } = await axios.post(`${AUTH_SERVICE_URL}/users`, body);
         return data;
     }
 
     @Post('login')
     @HttpCode(HttpStatus.OK)
     async login(@Body() body: any) {
-        console.log('✅ auth-service login 도착'); // 확인용
-
         const { data } = await axios.post(`${AUTH_SERVICE_URL}/login`, body);
         return data;
     }
@@ -54,4 +56,5 @@ export class ProxyAuthController {
         });
         return data;
     }
+
 }
