@@ -33,8 +33,6 @@ export class ProxyAuthController {
     @Post('login')
     @HttpCode(HttpStatus.OK)
     async login(@Body() body: any) {
-        console.log('✅ auth-service login 도착'); // 확인용
-
         const { data } = await axios.post(`${AUTH_SERVICE_URL}/login`, body);
         return data;
     }
@@ -59,34 +57,4 @@ export class ProxyAuthController {
         return data;
     }
 
-    @Get('gifts')
-    async getGifts() {
-        const { data } = await axios.get(`${AUTH_SERVICE_URL}/gifts`);
-        return data;
-    }
-
-    @Get('gifts/:id')
-    async getGift(@Param('id') id: string) {
-        const { data } = await axios.get(`${AUTH_SERVICE_URL}/gifts/${id}`);
-        return data;
-    }
-
-    @Post('gifts')
-    @HttpCode(HttpStatus.CREATED)
-    async createGift(@Body() body: any) {
-        const { data } = await axios.post(`${AUTH_SERVICE_URL}/gifts`, body);
-        return data;
-    }
-
-    @Put('gifts/:id')
-    async updateGift(@Param('id') id: string, @Body() body: any) {
-        const { data } = await axios.put(`${AUTH_SERVICE_URL}/gifts/${id}`, body);
-        return data;
-    }
-
-    @Delete('gifts/:id')
-    async deleteGift(@Param('id') id: string) {
-        const { data } = await axios.delete(`${AUTH_SERVICE_URL}/gifts/${id}`);
-        return data;
-    }
 }

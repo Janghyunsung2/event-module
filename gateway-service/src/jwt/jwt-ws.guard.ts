@@ -13,6 +13,7 @@ export class JwtWsGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const client: Socket = context.switchToWs().getClient();
         const token = client.handshake.headers.authorization?.split(' ')[1];
+        console.log('token', token);
         if (!token) throw new UnauthorizedException('토큰이 없습니다.');
 
         try {

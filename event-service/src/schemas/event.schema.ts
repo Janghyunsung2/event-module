@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type EventDocument = Event & Document;
 
-@Schema({ timestamps: true })
+@Schema({ collection: 'events', timestamps: true })
 export class Event {
 
     @Prop({ required: true })
@@ -13,6 +13,7 @@ export class Event {
     title: string;
     @Prop() type: string;
     @Prop() creatorId: string;
+    @Prop() updatedId: string;
     @Prop() description: string;
 
     @Prop() endAt: Date;

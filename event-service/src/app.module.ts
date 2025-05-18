@@ -7,6 +7,7 @@ import {EventSchema} from "./schemas/event.schema";
 import {EventModule} from "./module/event.module";
 import {RewardLogModule} from "./module/reward-log.module";
 import {UserEventProgressModule} from "./module/user-event-progress.module";
+import {RewardRequestModule} from "./module/reward-request.module";
 
 
 @Module({
@@ -19,9 +20,10 @@ import {UserEventProgressModule} from "./module/user-event-progress.module";
     MongooseModule.forFeature([
       { name: Event.name, schema: EventSchema },
     ]),
-    EventModule,
+      EventModule,
       RewardLogModule,
-      UserEventProgressModule
+      UserEventProgressModule,
+      RewardRequestModule,
   ],
   controllers: [AppController],
   providers: [AppService],

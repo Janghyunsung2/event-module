@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type RewardLogDocument = RewardLog & Document;
 
-@Schema({ timestamps: true })
+@Schema({collection: 'reward_logs', timestamps: true })
 export class RewardLog {
   @Prop({ required: true })
   _id: string;
@@ -38,6 +38,16 @@ export class RewardLog {
 
   @Prop()
   reason: string;
+
+  @Prop()
+  requestedByUser: boolean; // 사용자 요청 여부
+
+  @Prop()
+  approvedByAdmin: String; // 관리자 아이디
+
+  @Prop()
+  requestId : String;
+
 }
 
 export const RewardLogSchema = SchemaFactory.createForClass(RewardLog);

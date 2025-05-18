@@ -1,18 +1,23 @@
 import {
-    Body,
-    Controller, Get,
-    HttpCode,
-    HttpStatus,
-    Post, Put, Delete,
-    Param,
-    Req,
-} from '@nestjs/common';
+        Body,
+        Controller, Get,
+        HttpCode,
+        HttpStatus,
+        Post, Put, Delete,
+        Param,
+        Req,
+        UseGuards,
+    } from '@nestjs/common';
 import { Request } from 'express';
 import axios from 'axios';
+import { Roles } from '../role/roles.decorator';
+import { Role } from '../role/role.enum';
+import { RolesGuard } from '../role/role.guard';
 
 const EVENT_SERVICE_URL = process.env.EVENT_SERVICE_URL || 'http://localhost:3002';
 
-@Controller()
+@UseGuards(RolesGuard)
+@Controller('events')
 export class ProxyEventController {
     // 이벤트
     @Get()
@@ -22,13 +27,16 @@ export class ProxyEventController {
         return data;
     }
 
+    @Roles(Role.ADMIN)
     @Post()
     @HttpCode(HttpStatus.CREATED)
     async createEvent(@Body() body: any) {
+        console.log('이벤트 생성 요청:', body);
         const { data } = await axios.post(`${EVENT_SERVICE_URL}/events`, body);
         return data;
     }
 
+    @Roles(Role.ADMIN)
     @Put(':id')
     @HttpCode(HttpStatus.OK)
     async updateEvent(@Body() body: any, @Req() req: Request) {
@@ -62,6 +70,7 @@ export class ProxyEventController {
         return data;
     }
 
+    @Roles(Role.ADMIN)
     @Delete('user-event-progress/:id')
     async deleteUserEventProgress(@Param('id') id: string) {
         const { data } = await axios.delete(`${EVENT_SERVICE_URL}/user-event-progress/${id}`);
@@ -81,18 +90,21 @@ export class ProxyEventController {
         return data;
     }
 
+    @Roles(Role.ADMIN)
     @Post('reward-logs')
     async createRewardLog(@Body() body: any) {
         const { data } = await axios.post(`${EVENT_SERVICE_URL}/reward-logs`, body);
         return data;
     }
 
+    @Roles(Role.ADMIN)
     @Put('reward-logs/:id')
     async updateRewardLog(@Param('id') id: string, @Body() body: any) {
         const { data } = await axios.put(`${EVENT_SERVICE_URL}/reward-logs/${id}`, body);
         return data;
     }
 
+    @Roles(Role.ADMIN)
     @Delete('reward-logs/:id')
     async deleteRewardLog(@Param('id') id: string) {
         const { data } = await axios.delete(`${EVENT_SERVICE_URL}/reward-logs/${id}`);

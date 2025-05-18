@@ -11,7 +11,6 @@ import { User, UserSchema } from './schemas/user.schema';
 import {AppController} from "./app.controller";
 import {AppService} from "./app.service";
 import * as process from "node:process";
-import {GiftModule} from "./module/gift.module";
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -32,7 +31,7 @@ import {GiftModule} from "./module/gift.module";
         },
       }),
     }),
-      GiftModule
+
   ],
   controllers: [AuthServiceController, AppController],
   providers: [AuthService, AppService],

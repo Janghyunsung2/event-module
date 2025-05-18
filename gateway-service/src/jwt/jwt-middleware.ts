@@ -1,9 +1,8 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-import { JwtService } from '@nestjs/jwt';
-import { ExternalAuthService } from '../service/auth.service.service';
+import {Injectable, NestMiddleware} from '@nestjs/common';
+import {NextFunction, Request, Response} from 'express';
+import {JwtService} from '@nestjs/jwt';
+import {ExternalAuthService} from '../service/auth.service.service';
 import axios from "axios";
-import * as path from "node:path";
 
 @Injectable()
 export class JwtMiddleware implements NestMiddleware {
@@ -22,10 +21,15 @@ export class JwtMiddleware implements NestMiddleware {
 
         try {
             const payload = this.jwtService.verify(token);
-            const user = await this.authService.validateUserByPayload(payload);
-            (req as any).user = user;
+            (req as any).user = await this.authService.validateUserByPayload(payload);
+
+            console.log('next()')
+
+            console.log('user:', (req as any).user);
+
+            return next();
         } catch (e) {
-            // 토큰이 만료됐는지 확인
+
             if(e.name != 'TokenExpiredError') {
                 return next();
             }

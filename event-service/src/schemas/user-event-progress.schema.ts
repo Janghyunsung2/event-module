@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type UserEventProgressDocument = UserEventProgress & Document;
 
-@Schema({ timestamps: false })
+@Schema({collection: 'user_event_progress' ,timestamps: true })
 export class UserEventProgress {
   @Prop({ required: true })
   _id: string;
@@ -38,8 +38,6 @@ export class UserEventProgress {
   @Prop()
   rewardExpiresAt: Date;
 
-  @Prop()
-  updatedAt: Date;
 }
 
 export const UserEventProgressSchema = SchemaFactory.createForClass(UserEventProgress);
