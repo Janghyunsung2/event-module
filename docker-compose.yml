@@ -40,6 +40,8 @@ services:
       - "27018:27017"
     volumes:
       - mongo-data:/data/db
+      - ./auth-service/mongo-init.js:/docker-entrypoint-initdb.d/auth-mongo-init.js:ro
+      - ./event-service/mongo-init.js:/docker-entrypoint-initdb.d/event-mongo-init.js:ro
 
 volumes:
    mongo-data:
