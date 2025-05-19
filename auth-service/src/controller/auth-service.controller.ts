@@ -6,6 +6,7 @@ import {
     ValidationPipe,
     HttpCode,
     HttpStatus, Get, Param,
+    Query,
 } from '@nestjs/common';
 import { AuthService } from '../service/auth-service.service';
 import { RegisterDto } from '../dto/register.dto';
@@ -55,9 +56,9 @@ export class AuthServiceController {
     @Get('users')
     @ApiOkResponse({ type: UserResponse, description: '유저페이징조회' })
     async findAll(
-        @Param('page') page: number,
-        @Param('limit') limit: number,
-        @Param('search') search: string,
+        @Query('page') page: number,
+        @Query('limit') limit: number,
+        @Query('search') search: string,
     ): Promise<PaginatedResultDto<UserResponse>> {
         return this.authService.findAll(page, limit, search);
     }
