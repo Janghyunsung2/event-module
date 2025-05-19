@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import axios from "axios";
+import {gatewayAxios} from "../common/gatewayAxios";
 
 @Injectable()
 export class ExternalAuthService {
@@ -23,7 +23,7 @@ export class ExternalAuthService {
 
     async verifyToken(token: string): Promise<any> {
         try {
-            const response = await axios.get(`${this.authServiceUrl}/verify`, {
+            const response = await gatewayAxios.get(`${this.authServiceUrl}/verify`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -39,7 +39,7 @@ export class ExternalAuthService {
 
 
         try {
-            const response = await axios.get(`${this.authServiceUrl}/users/${sub}`);
+            const response = await gatewayAxios.get(`${this.authServiceUrl}/users/${sub}`);
             const user = response.data;
 
             if (!user) {
