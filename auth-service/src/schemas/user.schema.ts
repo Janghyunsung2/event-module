@@ -12,6 +12,9 @@ export class User extends Document {
     @Prop({ required: true })
     name: string;
 
+    @Prop({ required: true })
+    nickname: string;
+
     @Prop({ required: true , default: 'USER' }) // 기본값을 'user'로 설정
     role: string;
 
@@ -20,6 +23,9 @@ export class User extends Document {
 
     @Prop({ default: null }) // 로그인한 시간 기록용
     loginAt?: Date;
+
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { RewardLog, RewardLogDocument } from '../schemas/reward-log.schema';
 import { CreateRewardLogDto } from '../dto/rewardlog/create-reward-log.dto';
 import { UpdateRewardLogDto } from '../dto/rewardlog/update-reward-log.dto';
-import {PaginatedResultDto} from "../dto/page/paginated-result.dto";
+import { PaginatedResultDto } from "../dto/page/paginated-result.dto";
 
 @Injectable()
 export class RewardLogService {
@@ -12,18 +12,21 @@ export class RewardLogService {
     @InjectModel(RewardLog.name) private rewardLogModel: Model<RewardLogDocument>,
   ) {}
 
-  async create(createRewardLogDto: CreateRewardLogDto): Promise<RewardLog> {
-    return this.rewardLogModel.create(createRewardLogDto);
+  async create(eventId: string, createRewardLogDto: CreateRewardLogDto): Promise<RewardLog> {
+    return this.rewardLogModel.create({ ...createRewardLogDto, eventId });
   }
 
-  async findAll({ page, limit, search, status }: { page: number; limit: number; search: string; status: string }): Promise<PaginatedResultDto<RewardLog>> {
+  async findAll(
+    eventId: string,
+    { page, limit, search, status }: { page: number; limit: number; search: string; status: string }
+  ): Promise<PaginatedResultDto<RewardLog>> {
     const skip = (page - 1) * limit;
 
-    const query: any = {};
+    const query: any = { eventId };
     if (search) {
       query.$or = [
-        { title: { $regex: search, $options: 'i' } }, // title 필드에서 검색
-        { description: { $regex: search, $options: 'i' } }, // description 필드에서 검색
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
       ];
     }
     if (status) {
@@ -38,22 +41,39 @@ export class RewardLogService {
     return { data, totalCount, page, limit };
   }
 
-  async findOne(id: string): Promise<RewardLog | null> {
-    return this.rewardLogModel.findById(id).exec();
+  async findOne(eventId: string, id: string): Promise<RewardLog | null> {
+    return this.rewardLogModel.findOne({ _id: id, eventId }).exec();
   }
 
-  async update(id: string, updateRewardLogDto: UpdateRewardLogDto): Promise<RewardLog | null> {
-    return this.rewardLogModel.findByIdAndUpdate(id, updateRewardLogDto, { new: true }).exec();
+  async update(eventId: string, id: string, updateRewardLogDto: UpdateRewardLogDto): Promise<RewardLog | null> {
+    return this.rewardLogModel.findOneAndUpdate(
+      { _id: id, eventId },
+      updateRewardLogDto,
+      { new: true }
+    ).exec();
   }
 
-  async complete(id: string): Promise<RewardLog | null> {
-      return this.rewardLogModel.findByIdAndUpdate(id, { status: 'COMPLETED' }, { new: true }).exec();
-  }
-  async exprire(id: string): Promise<RewardLog | null> {
-    return this.rewardLogModel.findByIdAndUpdate(id, {status: 'EXPIRED'}, {new: true}).exec();
+  async complete(eventId: string, id: string): Promise<RewardLog | null> {
+    return this.rewardLogModel.findOneAndUpdate(
+      { _id: id, eventId },
+      { status: 'COMPLETED' },
+      { new: true }
+    ).exec();
   }
 
-  async fail(id: string): Promise<RewardLog | null> {
-    return this.rewardLogModel.findByIdAndUpdate(id, {status: 'FAILED'}, {new: true}).exec();
+  async exprire(eventId: string, id: string): Promise<RewardLog | null> {
+    return this.rewardLogModel.findOneAndUpdate(
+      { _id: id, eventId },
+      { status: 'EXPIRED' },
+      { new: true }
+    ).exec();
+  }
+
+  async fail(eventId: string, id: string): Promise<RewardLog | null> {
+    return this.rewardLogModel.findOneAndUpdate(
+      { _id: id, eventId },
+      { status: 'FAILED' },
+      { new: true }
+    ).exec();
   }
 }

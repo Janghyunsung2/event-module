@@ -30,13 +30,16 @@ export class RewardRequestService {
     @InjectModel(RewardRequest.name) private rewardRequestModel: Model<RewardRequestDocument>,
   ) {}
 
-  async create(dto: CreateRewardRequestDto): Promise<RewardResponseDto> {
-    const created = await this.rewardRequestModel.create(dto);
+  async create(eventId: string, dto: CreateRewardRequestDto): Promise<RewardResponseDto> {
+    const created = await this.rewardRequestModel.create({ ...dto, eventId });
     return toRewardResponseDto(created);
   }
 
-  async findAll({ page, limit, search, status }: { page: number; limit: number; search: string; status: string }) {
-    const filter: any = {};
+  async findAll(
+    eventId: string,
+    { page, limit, search, status }: { page: number; limit: number; search: string; status: string }
+  ) {
+    const filter: any = { eventId };
     if (search) {
       filter.$or = [
         { userId: { $regex: search, $options: 'i' } },
@@ -49,11 +52,11 @@ export class RewardRequestService {
 
     const [data, totalCount] = await Promise.all([
       this.rewardRequestModel
-          .find(filter)
-          .skip((page - 1) * limit)
-          .limit(limit)
-          .sort({ requestedAt: -1 })
-          .lean(),
+        .find(filter)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort({ requestedAt: -1 })
+        .lean(),
       this.rewardRequestModel.countDocuments(filter),
     ]);
 
@@ -65,38 +68,46 @@ export class RewardRequestService {
     };
   }
 
-  async findOne(id: string): Promise<RewardResponseDto | null> {
-    const found = await this.rewardRequestModel.findById(id).exec();
+  async findOne(eventId: string, id: string): Promise<RewardResponseDto | null> {
+    const found = await this.rewardRequestModel.findOne({ _id: id, eventId }).exec();
     return toRewardResponseDto(found);
   }
 
-  async update(id: string, dto: UpdateRewardRequestDto): Promise<RewardResponseDto | null> {
-    const updated = await this.rewardRequestModel.findByIdAndUpdate(id, dto, { new: true }).exec();
+  async update(eventId: string, id: string, dto: UpdateRewardRequestDto): Promise<RewardResponseDto | null> {
+    const updated = await this.rewardRequestModel.findOneAndUpdate(
+      { _id: id, eventId },
+      dto,
+      { new: true }
+    ).exec();
     return toRewardResponseDto(updated);
   }
 
-  async remove(id: string): Promise<RewardResponseDto | null> {
-    const deleted = await this.rewardRequestModel.findByIdAndDelete(id).exec();
+  async remove(eventId: string, id: string): Promise<RewardResponseDto | null> {
+    const deleted = await this.rewardRequestModel.findOneAndDelete({ _id: id, eventId }).exec();
     return toRewardResponseDto(deleted);
   }
 
-  async pending(id: string): Promise<RewardResponseDto | null> {
-    const updated = await this.rewardRequestModel.findByIdAndUpdate(id, { status: 'PENDING' }, { new: true }).exec();
+  async pending(eventId: string, id: string): Promise<RewardResponseDto | null> {
+    const updated = await this.rewardRequestModel.findOneAndUpdate(
+      { _id: id, eventId },
+      { status: 'PENDING' },
+      { new: true }
+    ).exec();
     return toRewardResponseDto(updated);
   }
 
-  async approve(id: string, adminId: string): Promise<RewardResponseDto | null> {
-    const updated = await this.rewardRequestModel.findByIdAndUpdate(
-      id,
+  async approve(eventId: string, id: string, adminId: string): Promise<RewardResponseDto | null> {
+    const updated = await this.rewardRequestModel.findOneAndUpdate(
+      { _id: id, eventId },
       { status: 'APPROVED', approvedAt: new Date(), adminId },
       { new: true }
     ).exec();
     return toRewardResponseDto(updated);
   }
 
-  async reject(id: string, adminId: string, reason: string): Promise<RewardResponseDto | null> {
-    const updated = await this.rewardRequestModel.findByIdAndUpdate(
-      id,
+  async reject(eventId: string, id: string, adminId: string, reason: string): Promise<RewardResponseDto | null> {
+    const updated = await this.rewardRequestModel.findOneAndUpdate(
+      { _id: id, eventId },
       { status: 'REJECTED', rejectedAt: new Date(), adminId, reason },
       { new: true }
     ).exec();

@@ -23,10 +23,6 @@ export class JwtMiddleware implements NestMiddleware {
             const payload = this.jwtService.verify(token);
             (req as any).user = await this.authService.validateUserByPayload(payload);
 
-            console.log('next()')
-
-            console.log('user:', (req as any).user);
-
             return next();
         } catch (e) {
 

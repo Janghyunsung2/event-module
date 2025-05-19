@@ -1,7 +1,11 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as express from 'express';
-import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {GatewayAuthMiddleware} from "./middleware/gateway-auth.middleware";
 
 
 async function bootstrap() {
@@ -17,6 +21,8 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  app.use(new GatewayAuthMiddleware().use);
 
   await app.listen(process.env.PORT ?? 3002);
 }
