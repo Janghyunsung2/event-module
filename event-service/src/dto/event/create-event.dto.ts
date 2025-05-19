@@ -35,10 +35,10 @@ export class CreateEventDto {
     })
     conditions: { type: string; value: number }[];
 
-    @ApiProperty({
-        description: "이벤트 보상 목록",
-        type: [Object],
-        example: [{ type: "포인트", amount: 100, unit: "P" }]
-    })
-    rewards: { type: string; amount: number; unit: string }[];
+    // @ApiProperty({
+    //     description: "이벤트 보상 목록",
+    //     type: [Object],
+    //     example: [{ type: "포인트", amount: 100, unit: "P" }]
+    // })
+    // rewards: { type: string; amount: number; unit: string }[];
 }
