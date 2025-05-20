@@ -15,4 +15,9 @@ export class RegisterDto {
     @IsNotEmpty()
     name: string;
 
+
+    @ApiProperty({description: 'nickname'})
+    @IsNotEmpty()
+    nickname: string;
+
 }

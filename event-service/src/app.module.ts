@@ -8,6 +8,7 @@ import {EventModule} from "./module/event.module";
 import {RewardLogModule} from "./module/reward-log.module";
 import {UserEventProgressModule} from "./module/user-event-progress.module";
 import {RewardRequestModule} from "./module/reward-request.module";
+import {RewardModule} from "./module/reward.module";
 
 
 @Module({
@@ -24,6 +25,7 @@ import {RewardRequestModule} from "./module/reward-request.module";
       RewardLogModule,
       UserEventProgressModule,
       RewardRequestModule,
+      RewardModule
   ],
   controllers: [AppController],
   providers: [AppService],

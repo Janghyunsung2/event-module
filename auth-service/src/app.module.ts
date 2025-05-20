@@ -34,6 +34,6 @@ import * as process from "node:process";
 
   ],
   controllers: [AuthServiceController, AppController],
-  providers: [AuthService, AppService],
+  providers: [AuthService, AppService, ],
 })
 export class AppModule {}

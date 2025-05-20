@@ -10,6 +10,9 @@ export class UserResponse {
   @ApiProperty({ description: '이름' })
   name: string;
 
+  @ApiProperty({ description: '닉네임'})
+  nickname: string;
+
   @ApiProperty({ description: '권한' })
   role: string;
 

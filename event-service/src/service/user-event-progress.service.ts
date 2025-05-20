@@ -5,6 +5,7 @@ import { UserEventProgress, UserEventProgressDocument } from '../schemas/user-ev
 import { CreateUserEventProgressDto } from '../dto/usereventprogress/create-user-event-progress.dto';
 import { UpdateUserEventProgressDto } from '../dto/usereventprogress/update-user-event-progress.dto';
 import { UserEventProgressResponseDto } from '../dto/usereventprogress/user-event-progress-response.dto';
+import {PatchUserEventProgressDto} from "../dto/usereventprogress/patch-user-event-progress.dto";
 
 @Injectable()
 export class UserEventProgressService {
@@ -29,33 +30,37 @@ export class UserEventProgressService {
     };
   }
 
-  async create(dto: CreateUserEventProgressDto): Promise<UserEventProgressResponseDto> {
-    const created = await this.progressModel.create(dto);
+  async create(eventId: string, dto: CreateUserEventProgressDto): Promise<UserEventProgressResponseDto> {
+    const created = await this.progressModel.create({ ...dto, eventId });
     return this.toResponseDto(created);
   }
 
-  async findAll(): Promise<UserEventProgressResponseDto[]> {
-    const docs = await this.progressModel.find().exec();
+  async findAll(eventId: string): Promise<UserEventProgressResponseDto[]> {
+    const docs = await this.progressModel.find({ eventId }).exec();
     return docs.map(doc => this.toResponseDto(doc));
   }
 
-  async findOne(id: string): Promise<UserEventProgressResponseDto | null> {
-    const doc = await this.progressModel.findById(id).exec();
+  async findOne(eventId: string, id: string): Promise<UserEventProgressResponseDto | null> {
+    const doc = await this.progressModel.findOne({ _id: id, eventId }).exec();
     return this.toResponseDto(doc);
   }
 
-  async update(id: string, dto: UpdateUserEventProgressDto): Promise<UserEventProgressResponseDto | null> {
-    const updated = await this.progressModel.findByIdAndUpdate(id, dto, { new: true }).exec();
+  async update(eventId: string, id: string, dto: UpdateUserEventProgressDto): Promise<UserEventProgressResponseDto | null> {
+    const updated = await this.progressModel.findOneAndUpdate(
+      { _id: id, eventId },
+      dto,
+      { new: true }
+    ).exec();
     return this.toResponseDto(updated);
   }
 
-  async remove(id: string): Promise<UserEventProgressResponseDto | null> {
-    const deleted = await this.progressModel.findByIdAndDelete(id).exec();
+  async remove(eventId: string, id: string): Promise<UserEventProgressResponseDto | null> {
+    const deleted = await this.progressModel.findOneAndDelete({ _id: id, eventId }).exec();
     return this.toResponseDto(deleted);
   }
 
-  async updateProgress(id: string, dto: Partial<UpdateUserEventProgressDto>): Promise<UserEventProgressResponseDto | null> {
-    const doc = await this.progressModel.findById(id);
+  async patchProgress(eventId: string, id: string, dto: Partial<PatchUserEventProgressDto>): Promise<UserEventProgressResponseDto | null> {
+    const doc = await this.progressModel.findOne({ _id: id, eventId });
     if (!doc) return null;
 
     let status = dto.status ?? doc.status;
@@ -68,8 +73,8 @@ export class UserEventProgressService {
       status = 'COMPLETED';
     }
 
-    const updated = await this.progressModel.findByIdAndUpdate(
-        id,
+    const updated = await this.progressModel.findOneAndUpdate(
+        { _id: id, eventId },
         { ...dto, status, updatedAt: new Date() },
         { new: true }
     ).exec();

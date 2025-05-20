@@ -1,4 +1,10 @@
-import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    UnauthorizedException,
+    ConflictException,
+    NotFoundException
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -11,6 +17,8 @@ import {RegisterDto} from "../dto/register.dto";
 import { LoginDto } from "../dto/login.dto";
 import { TokenDto } from "../dto/token.dto";
 import {MessageDto} from "../dto/message.dto";
+import {PaginatedResultDto} from "../dto/paginated-result.dto";
+import {UserResponse} from "../dto/user-response.dto";
 
 
 @Injectable()
@@ -24,13 +32,13 @@ export class AuthService {
 
     private generateTokens(user: User) {
         const payload = { sub: user.id, email: user.email, role: user.role };
-        const accessToken = this.jwtService.sign(payload, { expiresIn: '30d' });
+        const accessToken = this.jwtService.sign(payload, { expiresIn: '30m' });
         const refreshToken = crypto.randomUUID();
         return { accessToken, refreshToken, payload };
     }
 
     private async storeRefreshToken(token: string, userId: string) {
-        await this.redis.set(`refresh:${token}`, userId, 'EX', 60 * 60 * 60 * 24); // 24시간
+        await this.redis.set(`refresh:${token}`, userId, 'EX', 60 * 60 * 60 * 3); // 3시간
     }
 
     private async deleteRefreshToken(token: string) {
@@ -119,18 +127,23 @@ export class AuthService {
     }
 
     async register(userDto: RegisterDto): Promise<MessageDto>  {
-        const { email, password, ...rest } = userDto;
+        const { email, password, nickname, ...rest } = userDto;
 
-        const existingUser = await this.userModel.findOne({ email });
-        if (existingUser) {
-            console.log('existingUser', existingUser);
-            throw new BadRequestException('User already exists');
+        const existingEmail = await this.userModel.findOne({ email });
+        if (existingEmail) {
+            throw new ConflictException('이미 사용 중인 이메일입니다.');
+        }
+
+        const existingNickname = await this.userModel.findOne({ nickname });
+        if (existingNickname) {
+            throw new ConflictException('이미 사용 중인 닉네임입니다.');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new this.userModel({
             email,
             password: hashedPassword,
+            nickname,
             ...rest,
         });
 
@@ -158,8 +171,39 @@ export class AuthService {
             .select('-password -__v')
             .exec();
         if (!user) {
-            throw new UnauthorizedException('User not found');
+            throw new NotFoundException('User not found');
         }
         return user;
+    }
+    async findAll(page: number, limit: number, search: string): Promise<PaginatedResultDto<UserResponse>> {
+        const skip = (page - 1) * limit;
+        const query: any = {};
+        if (search) {
+            query.$or = [
+                { email: { $regex: search, $options: 'i' } },
+                { name: { $regex: search, $options: 'i' } },
+            ];
+        }
+        const [data, totalCount] = await Promise.all([
+            this.userModel.find(query).skip(skip).limit(limit).exec(),
+            this.userModel.countDocuments(query),
+        ]);
+        return {
+            data: data.map(user => {
+                const userObj = user.toObject ? user.toObject() : user;
+                return {
+                    id: userObj.id,
+                    email: userObj.email,
+                    name: userObj.name,
+                    nickname: userObj.nickname,
+                    role: userObj.role,
+                    createdAt: userObj.createdAt ?? null,
+                    updatedAt: userObj.updatedAt ?? null,
+                };
+            }),
+            totalCount,
+            page,
+            limit,
+        };
     }
 }

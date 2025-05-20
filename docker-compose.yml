@@ -1,25 +1,47 @@
-
 services:
   gateway:
     build:
       context: ./gateway-service
     ports:
-      - "3000:3000"
+      - "4000:4000"
     environment:
-      - PORT=3000
+      - PORT=4000
+    env_file:
+      - ./gateway-service/.env.prod
 
   auth:
     build:
       context: ./auth-service
     ports:
-      - "3001:3000"
+      - "3000:3000"
     environment:
       - PORT=3000
+    env_file:
+      - ./auth-service/.env.prod
 
   event:
     build:
       context: ./event-service
     ports:
-      - "3002:3000"
+      - "3002:3002"
     environment:
-      - PORT=3000
+      - PORT=3002
+    env_file:
+      - ./event-service/.env.prod
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  mongo:
+    image: mongo:6
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+      - ./auth-service/mongo-init.js:/docker-entrypoint-initdb.d/auth-mongo-init.js:ro
+      - ./event-service/mongo-init.js:/docker-entrypoint-initdb.d/event-mongo-init.js:ro
+
+volumes:
+   mongo-data:

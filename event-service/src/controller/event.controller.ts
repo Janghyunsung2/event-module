@@ -2,7 +2,16 @@ import { Controller, Get, Post, Body, Param, Patch, Delete, Put, Query, Headers 
 import { EventService } from '../service/event.service';
 import { CreateEventDto } from '../dto/event/create-event.dto';
 import { UpdateEventDto } from '../dto/event/update-event.dto';
-import { ApiTags, ApiOperation, ApiOkResponse, ApiParam, ApiQuery, ApiBody, ApiResponse } from '@nestjs/swagger';
+import {
+    ApiTags,
+    ApiOperation,
+    ApiOkResponse,
+    ApiParam,
+    ApiQuery,
+    ApiBody,
+    ApiResponse,
+    ApiBearerAuth
+} from '@nestjs/swagger';
 import { EventResponseDto } from '../dto/event/event-response.dto';
 import { PaginatedResultDto } from '../dto/page/paginated-result.dto';
 
@@ -15,6 +24,7 @@ export class EventController {
     @ApiOperation({ summary: '이벤트 등록' })
     @ApiBody({ type: CreateEventDto })
     @ApiOkResponse({ description: '이벤트 등록 성공', type: EventResponseDto })
+    @ApiBearerAuth()
     create(
         @Body() dto: CreateEventDto,
         @Headers('x-user-id') userId: string,
@@ -30,6 +40,7 @@ export class EventController {
     @ApiQuery({ name: 'search', required: false, type: String })
     @ApiQuery({ name: 'status', required: false, type: String })
     @ApiOkResponse({ description: '이벤트 목록', type: PaginatedResultDto })
+    @ApiBearerAuth()
     findAll(
         @Query('page') page = 1,
         @Query('limit') limit = 10,
@@ -43,7 +54,9 @@ export class EventController {
     @ApiOperation({ summary: '이벤트 단일조회' })
     @ApiParam({ name: 'id', description: '이벤트 ID' })
     @ApiOkResponse({ description: '이벤트 상세', type: EventResponseDto })
+    @ApiBearerAuth()
     findOne(@Param('id') id: string) {
+        console.log(id);
         return this.eventService.findOne(id);
     }
 
@@ -52,6 +65,7 @@ export class EventController {
     @ApiParam({ name: 'id', description: '이벤트 ID' })
     @ApiBody({ type: UpdateEventDto })
     @ApiOkResponse({ description: '이벤트 수정 성공', type: EventResponseDto })
+    @ApiBearerAuth()
     update(
         @Param('id') id: string,
         @Body() dto: UpdateEventDto,
@@ -64,6 +78,7 @@ export class EventController {
     @Delete(':id')
     @ApiOperation({ summary: '이벤트 삭제' })
     @ApiResponse({ status: 200, description: '성공' })
+    @ApiBearerAuth()
     remove(@Param('id') id: string) {
         return this.eventService.remove(id);
     }
@@ -72,6 +87,7 @@ export class EventController {
     @ApiOperation({ summary: '이벤트 활성화' })
     @ApiParam({ name: 'id', description: '이벤트 ID' })
     @ApiOkResponse({ description: '이벤트 활성화 성공', type: EventResponseDto })
+    @ApiBearerAuth()
     activate(@Param('id') id: string) {
         return this.eventService.activate(id);
     }
@@ -80,6 +96,7 @@ export class EventController {
     @ApiOperation({ summary: '이벤트 비활성화' })
     @ApiParam({ name: 'id', description: '이벤트 ID' })
     @ApiOkResponse({ description: '이벤트 비활성화 성공', type: EventResponseDto })
+    @ApiBearerAuth()
     deactivate(@Param('id') id: string) {
         return this.eventService.deactivate(id);
     }

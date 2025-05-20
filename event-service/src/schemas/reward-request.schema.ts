@@ -14,9 +14,6 @@ export class RewardRequest {
   @Prop({ required: true })
   userId: string;
 
-  @Prop({ required: true })
-  rewardIndex: number;
-
   @Prop()
   requestedAt: Date;
 
@@ -42,4 +39,4 @@ export class RewardRequest {
 export const RewardRequestSchema = SchemaFactory.createForClass(RewardRequest);
 
 // Unique index 설정
-RewardRequestSchema.index({ userId: 1, eventId: 1, rewardIndex: 1 }, { unique: true });
+RewardRequestSchema.index({ userId: 1, eventId: 1 }, { unique: true });

@@ -3,11 +3,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateRewardRequestDto {
   @ApiProperty({ description: '보상 요청 ID' })
-  @IsNotEmpty()
   _id: string;
 
   @ApiProperty({ description: '이벤트 ID' })
-  @IsNotEmpty()
   eventId: string;
 
   @ApiProperty({ description: '유저 ID', required: false })

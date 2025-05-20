@@ -6,8 +6,6 @@ export type EventDocument = Event & Document;
 @Schema({ collection: 'events', timestamps: true })
 export class Event {
 
-    @Prop({ required: true })
-    _id: string;
 
     @Prop({ required: true })
     title: string;
@@ -20,9 +18,6 @@ export class Event {
 
     @Prop({ type: [{ type: Object }] })
     conditions: { type: string; value: number }[];
-
-    @Prop({ type: [{ type: Object }] })
-    rewards: { type: string; amount: number; unit: string }[];
 
     @Prop({ enum: ['ACTIVE', 'COMPLETED', 'EXPIRED', 'FAILED', 'CANCELLED'] })
     status: string;

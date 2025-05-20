@@ -5,8 +5,6 @@ export type RewardLogDocument = RewardLog & Document;
 
 @Schema({collection: 'reward_logs', timestamps: true })
 export class RewardLog {
-  @Prop({ required: true })
-  _id: string;
 
   @Prop({ required: true })
   eventId: string;
@@ -14,15 +12,35 @@ export class RewardLog {
   @Prop({ required: true })
   userId: string;
 
-  @Prop({ required: true })
-  rewardIndex: number;
-
   @Prop({
-    type: { type: String, required: true },
-    amount: { type: Number, required: true },
-    unit: { type: String, required: true }
+    type: {
+      type: String,
+      required: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    units: {
+      type: [String],
+      required: true,
+    },
+    itemId: {
+      type: String,
+      required: false,
+    },
+    itemName: {
+      type: String,
+      required: false,
+    },
   })
-  reward: { type: string; amount: number; unit: string };
+  reward: {
+    type: string;
+    amount: number;
+    units: string[];
+    itemId?: string;
+    itemName?: string;
+  };
 
   @Prop({ required: true })
   issuedAt: Date;
