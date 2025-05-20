@@ -36,6 +36,7 @@
     - jwt 토큰은 30분 후 만료됩니다.
 
 ### refresh token 전략
+    - regresh token은 3시간동안 레디스에 저장하고 있다가 지워집니다.
     - refresh token은 uuid를 발급해주고 캐시 메모리 uuid를 키로 저장하고 value로 userId를 저장합니다.
     - access token만료시 프론트에서 리프레쉬 토큰을 요청할때 만료된 access와 refresh 토큰을 보내면 캐시에 저장된
     refresh token을 삭제하고 새로운 access token과 refresh token을 발급합니다.
