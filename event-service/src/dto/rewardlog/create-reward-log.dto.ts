@@ -2,9 +2,6 @@ import { IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateRewardLogDto {
-  @ApiProperty({ description: '보상 로그 ID' })
-  @IsNotEmpty()
-  _id: string;
 
   @ApiProperty({ description: '이벤트 ID' })
   @IsNotEmpty()
@@ -13,10 +10,6 @@ export class CreateRewardLogDto {
   @ApiProperty({ description: '유저 ID' })
   @IsNotEmpty()
   userId: string;
-
-  @ApiProperty({ description: '보상 인덱스' })
-  @IsNotEmpty()
-  rewardIndex: number;
 
   @ApiProperty({
     description: '보상 정보',

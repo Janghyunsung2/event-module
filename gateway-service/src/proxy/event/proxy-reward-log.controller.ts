@@ -15,6 +15,7 @@ import { Roles } from '../../role/roles.decorator';
 import { Role } from '../../role/role.enum';
 import { RolesGuard } from '../../role/role.guard';
 import {gatewayAxios} from "../../common/gatewayAxios";
+import {AuthGuard} from "@nestjs/passport";
 
 const EVENT_SERVICE_URL = process.env.EVENT_SERVICE_URL || 'http://localhost:3002';
 
@@ -22,19 +23,18 @@ const EVENT_SERVICE_URL = process.env.EVENT_SERVICE_URL || 'http://localhost:300
 @Controller('events/:eventId/reward-logs')
 export class ProxyRewardLogController {
     // 리워드 로그 생성
-    @Roles(Role.ADMIN)
     @Post()
     @HttpCode(HttpStatus.CREATED)
     async create(
         @Param('eventId') eventId: string,
         @Body() body: any
     ) {
-        console.log("리워드 로그 생성 요청:", body);
         const { data } = await gatewayAxios.post(`${EVENT_SERVICE_URL}/events/${eventId}/reward-logs`, body);
         return data;
     }
 
     // 리워드 로그 페이징 조회
+    @UseGuards(AuthGuard('jwt'))
     @Roles(Role.ADMIN, Role.AUDITOR)
     @Get()
     @HttpCode(HttpStatus.OK)
@@ -52,6 +52,8 @@ export class ProxyRewardLogController {
     }
 
     // 리워드 로그 단일 조회
+    @UseGuards(AuthGuard('jwt'))
+    @Roles(Role.ADMIN)
     @Get(':id')
     @HttpCode(HttpStatus.OK)
     async findOne(
@@ -63,6 +65,7 @@ export class ProxyRewardLogController {
     }
 
     // 리워드 로그 수정
+    @UseGuards(AuthGuard('jwt'))
     @Roles(Role.ADMIN)
     @Put(':id')
     @HttpCode(HttpStatus.OK)
@@ -76,6 +79,7 @@ export class ProxyRewardLogController {
     }
 
     // 상태 완료
+    @UseGuards(AuthGuard('jwt'))
     @Roles(Role.ADMIN)
     @Patch(':id/complete')
     @HttpCode(HttpStatus.OK)
@@ -88,6 +92,7 @@ export class ProxyRewardLogController {
     }
 
     // 상태 실패
+    @UseGuards(AuthGuard('jwt'))
     @Roles(Role.ADMIN)
     @Patch(':id/fail')
     @HttpCode(HttpStatus.OK)
@@ -100,6 +105,7 @@ export class ProxyRewardLogController {
     }
 
     // 상태 만료
+    @UseGuards(AuthGuard('jwt'))
     @Roles(Role.ADMIN)
     @Patch(':id/expire')
     @HttpCode(HttpStatus.OK)

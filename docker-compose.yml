@@ -7,7 +7,7 @@ services:
     environment:
       - PORT=4000
     env_file:
-      - ./gateway-service/.env
+      - ./gateway-service/.env.prod
 
   auth:
     build:
@@ -17,7 +17,7 @@ services:
     environment:
       - PORT=3000
     env_file:
-      - ./auth-service/.env
+      - ./auth-service/.env.prod
 
   event:
     build:
@@ -27,7 +27,7 @@ services:
     environment:
       - PORT=3002
     env_file:
-      - ./event-service/.env
+      - ./event-service/.env.prod
 
   redis:
     image: redis:7

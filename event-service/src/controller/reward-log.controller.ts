@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Patch, Put, Query } from '@nestjs/c
 import { RewardLogService } from '../service/reward-log.service';
 import { CreateRewardLogDto } from '../dto/rewardlog/create-reward-log.dto';
 import { UpdateRewardLogDto } from '../dto/rewardlog/update-reward-log.dto';
-import { ApiTags, ApiOperation, ApiOkResponse, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
+import {ApiTags, ApiOperation, ApiOkResponse, ApiParam, ApiQuery, ApiBody, ApiBearerAuth} from '@nestjs/swagger';
 import { RewardLogResponseDto } from '../dto/rewardlog/reward-log-response.dto';
 import { PaginatedResultDto } from '../dto/page/paginated-result.dto';
 
@@ -16,6 +16,7 @@ export class RewardLogController {
   @ApiParam({ name: 'eventId', description: '이벤트 ID' })
   @ApiBody({ type: CreateRewardLogDto })
   @ApiOkResponse({ description: '등록된 보상 로그', type: RewardLogResponseDto })
+  @ApiBearerAuth()
   create(
     @Param('eventId') eventId: string,
     @Body() createRewardLogDto: CreateRewardLogDto
@@ -31,6 +32,7 @@ export class RewardLogController {
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'status', required: false, type: String })
   @ApiOkResponse({ description: '보상 로그 목록', type: PaginatedResultDto })
+  @ApiBearerAuth()
   findAll(
     @Param('eventId') eventId: string,
     @Query('page') page = 1,
@@ -46,6 +48,7 @@ export class RewardLogController {
   @ApiParam({ name: 'eventId', description: '이벤트 ID' })
   @ApiParam({ name: 'id', description: '보상 로그 ID' })
   @ApiOkResponse({ description: '보상 로그 상세', type: RewardLogResponseDto })
+  @ApiBearerAuth()
   findOne(@Param('eventId') eventId: string, @Param('id') id: string) {
     return this.rewardLogService.findOne(eventId, id);
   }
@@ -56,6 +59,7 @@ export class RewardLogController {
   @ApiParam({ name: 'id', description: '보상 로그 ID' })
   @ApiBody({ type: UpdateRewardLogDto })
   @ApiOkResponse({ description: '수정된 보상 로그', type: RewardLogResponseDto })
+  @ApiBearerAuth()
   update(
     @Param('eventId') eventId: string,
     @Param('id') id: string,
@@ -69,6 +73,7 @@ export class RewardLogController {
   @ApiParam({ name: 'eventId', description: '이벤트 ID' })
   @ApiParam({ name: 'id', description: '보상 로그 ID' })
   @ApiOkResponse({ description: '상태 완료된 보상 로그', type: RewardLogResponseDto })
+  @ApiBearerAuth()
   complete(@Param('eventId') eventId: string, @Param('id') id: string) {
     return this.rewardLogService.complete(eventId, id);
   }
@@ -78,6 +83,7 @@ export class RewardLogController {
   @ApiParam({ name: 'eventId', description: '이벤트 ID' })
   @ApiParam({ name: 'id', description: '보상 로그 ID' })
   @ApiOkResponse({ description: '상태 실패된 보상 로그', type: RewardLogResponseDto })
+  @ApiBearerAuth()
   fail(@Param('eventId') eventId: string, @Param('id') id: string) {
     return this.rewardLogService.fail(eventId, id);
   }
@@ -87,6 +93,7 @@ export class RewardLogController {
   @ApiParam({ name: 'eventId', description: '이벤트 ID' })
   @ApiParam({ name: 'id', description: '보상 로그 ID' })
   @ApiOkResponse({ description: '상태 만료된 보상 로그', type: RewardLogResponseDto })
+  @ApiBearerAuth()
   exprire(@Param('eventId') eventId: string, @Param('id') id: string) {
     return this.rewardLogService.exprire(eventId, id);
   }

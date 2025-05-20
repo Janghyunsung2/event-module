@@ -32,13 +32,13 @@ export class AuthService {
 
     private generateTokens(user: User) {
         const payload = { sub: user.id, email: user.email, role: user.role };
-        const accessToken = this.jwtService.sign(payload, { expiresIn: '30d' });
+        const accessToken = this.jwtService.sign(payload, { expiresIn: '30m' });
         const refreshToken = crypto.randomUUID();
         return { accessToken, refreshToken, payload };
     }
 
     private async storeRefreshToken(token: string, userId: string) {
-        await this.redis.set(`refresh:${token}`, userId, 'EX', 60 * 60 * 60 * 24); // 24시간
+        await this.redis.set(`refresh:${token}`, userId, 'EX', 60 * 60 * 60 * 3); // 3시간
     }
 
     private async deleteRefreshToken(token: string) {

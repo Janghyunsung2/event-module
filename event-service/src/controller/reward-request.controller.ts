@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, Put, Patch, Delete, HttpCode, HttpStatus, Query, Headers } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
+import {ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBody, ApiBearerAuth} from '@nestjs/swagger';
 import { RewardRequestService } from '../service/reward-request.service';
 import { CreateRewardRequestDto } from '../dto/rewardrequest/create-reward-request.dto';
 import { UpdateRewardRequestDto } from '../dto/rewardrequest/update-reward-request.dto';
@@ -17,13 +17,14 @@ export class RewardRequestController {
   @ApiParam({ name: 'eventId', description: '이벤트 ID' })
   @ApiBody({ type: CreateRewardRequestDto })
   @ApiResponse({ status: 201, type: RewardResponseDto })
+  @ApiBearerAuth()
   create(
     @Param('eventId') eventId: string,
     @Body() createDto: CreateRewardRequestDto,
     @Headers('x-user-id') userId: string,
   ) {
     createDto.userId = userId;
-    return this.rewardRequestService.create(eventId, createDto);
+    return this.rewardRequestService.createAndGrantReward(eventId, createDto);
   }
 
   @Get()
@@ -34,6 +35,7 @@ export class RewardRequestController {
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'status', required: false, type: String })
   @ApiResponse({ status: 200, type: PaginatedResultDto })
+  @ApiBearerAuth()
   findAll(
     @Param('eventId') eventId: string,
     @Query('page') page = 1,
@@ -49,6 +51,7 @@ export class RewardRequestController {
   @ApiParam({ name: 'eventId', description: '이벤트 ID' })
   @ApiParam({ name: 'id', description: '보상 요청 ID' })
   @ApiResponse({ status: 200, type: RewardResponseDto })
+  @ApiBearerAuth()
   findOne(@Param('eventId') eventId: string, @Param('id') id: string) {
     return this.rewardRequestService.findOne(eventId, id);
   }
@@ -59,6 +62,7 @@ export class RewardRequestController {
   @ApiParam({ name: 'id', description: '보상 요청 ID' })
   @ApiBody({ type: UpdateRewardRequestDto })
   @ApiResponse({ status: 200, type: RewardResponseDto })
+  @ApiBearerAuth()
   update(
     @Param('eventId') eventId: string,
     @Param('id') id: string,
@@ -72,6 +76,7 @@ export class RewardRequestController {
   @ApiParam({ name: 'eventId', description: '이벤트 ID' })
   @ApiParam({ name: 'id', description: '보상 요청 ID' })
   @ApiResponse({ status: 200, description: '성공' })
+  @ApiBearerAuth()
   remove(@Param('eventId') eventId: string, @Param('id') id: string) {
     return this.rewardRequestService.remove(eventId, id);
   }
@@ -81,6 +86,7 @@ export class RewardRequestController {
   @ApiParam({ name: 'eventId', description: '이벤트 ID' })
   @ApiParam({ name: 'id', description: '보상 요청 ID' })
   @ApiResponse({ status: 200, type: RewardResponseDto })
+  @ApiBearerAuth()
   pending(@Param('eventId') eventId: string, @Param('id') id: string) {
     return this.rewardRequestService.pending(eventId, id);
   }
@@ -91,6 +97,7 @@ export class RewardRequestController {
   @ApiParam({ name: 'id', description: '보상 요청 ID' })
   @ApiParam({ name: 'adminId', description: '관리자 ID' })
   @ApiResponse({ status: 200, type: RewardResponseDto })
+  @ApiBearerAuth()
   approve(
     @Param('eventId') eventId: string,
     @Param('id') id: string,
@@ -113,6 +120,7 @@ export class RewardRequestController {
     },
   })
   @ApiResponse({ status: 200, type: RewardResponseDto })
+  @ApiBearerAuth()
   reject(
     @Param('eventId') eventId: string,
     @Param('id') id: string,

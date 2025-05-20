@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Put, Param, Patch, Delete, Headers } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiHeader } from '@nestjs/swagger';
+import {ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiHeader, ApiBearerAuth} from '@nestjs/swagger';
 import { UserEventProgressService } from '../service/user-event-progress.service';
 import { CreateUserEventProgressDto } from '../dto/usereventprogress/create-user-event-progress.dto';
 import { UpdateUserEventProgressDto } from '../dto/usereventprogress/update-user-event-progress.dto';
@@ -17,12 +17,14 @@ export class UserEventProgressController {
     @ApiParam({ name: 'eventId', description: '이벤트 ID' })
     @ApiBody({ type: CreateUserEventProgressDto })
     @ApiResponse({ status: 201, type: UserEventProgressResponseDto })
+    @ApiBearerAuth()
     create(
         @Param('eventId') eventId: string,
         @Body() dto: CreateUserEventProgressDto,
         @Headers('x-user-id') userId: string,
     ) {
         dto.userId = userId;
+        console.log(dto);
         return this.service.create(eventId, dto);
     }
 
@@ -30,6 +32,7 @@ export class UserEventProgressController {
     @ApiOperation({ summary: '유저 이벤트 진행 전체 조회' })
     @ApiParam({ name: 'eventId', description: '이벤트 ID' })
     @ApiResponse({ status: 200, type: [UserEventProgressResponseDto] })
+    @ApiBearerAuth()
     findAll(@Param('eventId') eventId: string) {
         return this.service.findAll(eventId);
     }
@@ -39,6 +42,7 @@ export class UserEventProgressController {
     @ApiParam({ name: 'eventId', description: '이벤트 ID' })
     @ApiParam({ name: 'id', description: '유저 이벤트 진행 ID' })
     @ApiResponse({ status: 200, type: UserEventProgressResponseDto })
+    @ApiBearerAuth()
     findOne(@Param('eventId') eventId: string, @Param('id') id: string) {
         return this.service.findOne(eventId, id);
     }
@@ -49,6 +53,7 @@ export class UserEventProgressController {
     @ApiParam({ name: 'id', description: '유저 이벤트 진행 ID' })
     @ApiBody({ type: UpdateUserEventProgressDto })
     @ApiResponse({ status: 200, type: UserEventProgressResponseDto })
+    @ApiBearerAuth()
     update(
         @Param('eventId') eventId: string,
         @Param('id') id: string,
@@ -62,6 +67,7 @@ export class UserEventProgressController {
     @ApiParam({ name: 'eventId', description: '이벤트 ID' })
     @ApiParam({ name: 'id', description: '유저 이벤트 진행 ID' })
     @ApiResponse({ status: 200, description: '성공' })
+    @ApiBearerAuth()
     remove(@Param('eventId') eventId: string, @Param('id') id: string) {
         return this.service.remove(eventId, id);
     }
@@ -72,6 +78,7 @@ export class UserEventProgressController {
     @ApiParam({ name: 'id', description: '유저 이벤트 진행 ID' })
     @ApiBody({ type: UpdateUserEventProgressDto })
     @ApiResponse({ status: 200, type: PatchUserEventProgressDto })
+    @ApiBearerAuth()
     async patchProgress(
         @Param('eventId') eventId: string,
         @Param('id') id: string,

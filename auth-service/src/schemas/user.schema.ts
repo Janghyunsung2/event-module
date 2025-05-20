@@ -15,13 +15,13 @@ export class User extends Document {
     @Prop({ required: true , unique: true})
     nickname: string;
 
-    @Prop({ required: true , default: 'USER' }) // 기본값을 'user'로 설정
+    @Prop({ required: true , default: 'USER' })
     role: string;
 
-    @Prop({required: true, default: 'ACTIVE'}) // 기본값을 'ACTIVE'로 설정
+    @Prop({required: true, default: 'ACTIVE'})
     status: string;
 
-    @Prop({ default: null }) // 로그인한 시간 기록용
+    @Prop({ default: null })
     loginAt?: Date;
 
     createdAt?: Date;

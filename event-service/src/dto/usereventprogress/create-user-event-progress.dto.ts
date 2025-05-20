@@ -2,15 +2,11 @@ import { IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserEventProgressDto {
-  @ApiProperty({ description: '유저 이벤트 진행 ID' })
-  @IsNotEmpty()
-  _id: string;
 
   @ApiProperty({ description: '유저 ID', required: false })
   userId: string;
 
   @ApiProperty({ description: '이벤트 ID' })
-  @IsNotEmpty()
   eventId: string;
 
   @ApiProperty({
@@ -24,11 +20,9 @@ export class CreateUserEventProgressDto {
     description: '상태',
     enum: ['IN_PROGRESS', 'COMPLETED']
   })
-  @IsNotEmpty()
   status: 'IN_PROGRESS' | 'COMPLETED';
 
   @ApiProperty({ description: '마지막 수정자 ID' })
-  @IsNotEmpty()
   lastUpdatedBy: string;
 
   @ApiProperty({ description: '보상 지급 여부' })

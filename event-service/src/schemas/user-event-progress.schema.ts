@@ -5,8 +5,6 @@ export type UserEventProgressDocument = UserEventProgress & Document;
 
 @Schema({collection: 'user_event_progress' ,timestamps: true })
 export class UserEventProgress {
-  @Prop({ required: true })
-  _id: string;
 
   @Prop({ required: true })
   userId: string;
@@ -40,4 +38,18 @@ export class UserEventProgress {
 
 }
 
+
 export const UserEventProgressSchema = SchemaFactory.createForClass(UserEventProgress);
+
+UserEventProgressSchema.pre('save', function (this: any, next) {
+  if (
+      this.progress &&
+      this.progress.length > 0 &&
+      this.progress.every((p: any) => p.current >= p.required)
+  ) {
+    this.status = 'COMPLETED';
+  } else {
+    this.status = 'IN_PROGRESS';
+  }
+  next();
+});

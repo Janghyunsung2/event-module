@@ -26,6 +26,7 @@ const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3000'
 @UseGuards(RolesGuard)
 @Controller('auth')
 export class ProxyAuthController {
+
     @Post('users')
     @HttpCode(HttpStatus.CREATED)
     async register(@Body() body: any) {

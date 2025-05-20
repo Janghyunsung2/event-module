@@ -25,6 +25,7 @@ export class RewardService {
     ) {}
 
     async createRewards(eventId: string, createRewardDtos: CreateRewardDto[]): Promise<RewardResponseDto[]> {
+
         const docs = createRewardDtos.map(dto => ({ ...dto, eventId }));
         const rewards = await this.rewardModel.insertMany(docs);
         return rewards.map(toRewardResponseDto);

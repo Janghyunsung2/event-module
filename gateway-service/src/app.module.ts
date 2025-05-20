@@ -7,6 +7,7 @@ import { ProxyUserEventProgressController } from './proxy/event/proxy-user-event
 import { JwtModule } from '@nestjs/jwt';
 import { UserIdHeaderMiddleware } from './common/user-id-header.middleware';
 import {ProxyRewardController} from "./proxy/event/proxy-reward.controller";
+import {ProxyRewardRequestController} from "./proxy/event/proxy-reward-request.controller";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import {ProxyRewardController} from "./proxy/event/proxy-reward.controller";
     ProxyRewardLogController,
     ProxyUserEventProgressController,
       ProxyRewardController,
+      ProxyRewardRequestController
   ],
 })
 export class AppModule implements NestModule {

@@ -12,7 +12,7 @@ import { AuthService } from '../service/auth-service.service';
 import { RegisterDto } from '../dto/register.dto';
 import { LoginDto } from '../dto/login.dto';
 import { TokenDto } from "../dto/token.dto";
-import { ApiTags, ApiOkResponse, ApiBody } from "@nestjs/swagger";
+import {ApiTags, ApiOkResponse, ApiBody, ApiQuery, ApiBearerAuth} from "@nestjs/swagger";
 import {MessageDto} from "../dto/message.dto";
 import { UserResponse } from "../dto/user-response.dto";
 import {PaginatedResultDto} from "../dto/paginated-result.dto";
@@ -39,6 +39,7 @@ export class AuthServiceController {
 
     @Get('users/:id')
     @ApiOkResponse({ type: UserResponse, description: '유저조회' })
+    @ApiBearerAuth()
     async findOne(@Param('id') id: string): Promise<UserResponse> {
         const user = await this.authService.findOne(id); // user 변수 선언
         const userObj = user.toObject ? user.toObject() : user;
@@ -54,7 +55,11 @@ export class AuthServiceController {
     }
 
     @Get('users')
+    @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+    @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+    @ApiQuery({ name: 'search', required: false, type: String, example: '' })
     @ApiOkResponse({ type: UserResponse, description: '유저페이징조회' })
+    @ApiBearerAuth()
     async findAll(
         @Query('page') page: number,
         @Query('limit') limit: number,

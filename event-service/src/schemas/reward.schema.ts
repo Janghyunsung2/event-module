@@ -8,6 +8,7 @@ export enum RewardUnit {
     MESO = 'MESO',
     WON = 'WON',
     ITEM = 'ITEM',
+    CASH = 'CASH',
 }
 
 @Schema({collection: 'rewards', timestamps: true })

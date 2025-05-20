@@ -12,15 +12,12 @@ import {
     Headers,
     UseGuards,
 } from '@nestjs/common';
-import axios from 'axios';
-import { Roles } from '../../role/roles.decorator';
-import { Role } from '../../role/role.enum';
+
 import { RolesGuard } from '../../role/role.guard';
 import {gatewayAxios} from "../../common/gatewayAxios";
 
 const EVENT_SERVICE_URL = process.env.EVENT_SERVICE_URL || 'http://localhost:3002';
 
-@UseGuards(RolesGuard)
 @Controller('events/:eventId/user-event-progress')
 export class ProxyUserEventProgressController {
     // 유저 이벤트 진행 생성
@@ -31,7 +28,6 @@ export class ProxyUserEventProgressController {
         @Body() body: any,
         @Headers('x-user-id') userId: string,
     ) {
-        body.userId = userId;
         const { data } = await gatewayAxios.post(
             `${EVENT_SERVICE_URL}/events/${eventId}/user-event-progress`,
             body,

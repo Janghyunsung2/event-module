@@ -13,11 +13,11 @@ import {
     Headers,
     UseGuards,
 } from '@nestjs/common';
-import axios from 'axios';
 import { Roles } from '../../role/roles.decorator';
 import { Role } from '../../role/role.enum';
 import { RolesGuard } from '../../role/role.guard';
 import {gatewayAxios} from "../../common/gatewayAxios";
+import {AuthGuard} from "@nestjs/passport";
 
 const EVENT_SERVICE_URL = process.env.EVENT_SERVICE_URL || 'http://localhost:3002';
 
@@ -25,6 +25,7 @@ const EVENT_SERVICE_URL = process.env.EVENT_SERVICE_URL || 'http://localhost:300
 @Controller('events/:eventId/reward-requests')
 export class ProxyRewardRequestController {
     // 보상 요청 생성
+    @UseGuards(AuthGuard('jwt'))
     @Roles(Role.ADMIN, Role.USER)
     @Post()
     @HttpCode(HttpStatus.CREATED)
@@ -33,6 +34,7 @@ export class ProxyRewardRequestController {
         @Body() body: any,
         @Headers('x-user-id') userId: string,
     ) {
+        console.log("body", body);
         body.userId = userId;
         const { data } = await gatewayAxios.post(
             `${EVENT_SERVICE_URL}/events/${eventId}/reward-requests`,
@@ -43,6 +45,7 @@ export class ProxyRewardRequestController {
     }
 
     // 보상 요청 목록 조회
+    @UseGuards(AuthGuard('jwt'))
     @Roles(Role.ADMIN, Role.AUDITOR, Role.OPERATOR)
     @Get()
     @HttpCode(HttpStatus.OK)

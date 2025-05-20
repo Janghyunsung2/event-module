@@ -1,15 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import {Model, Schema} from 'mongoose';
 import { Event, EventDocument } from '../schemas/event.schema';
 import { CreateEventDto } from '../dto/event/create-event.dto';
 import { UpdateEventDto } from '../dto/event/update-event.dto';
 import { PaginatedResultDto } from '../dto/page/paginated-result.dto';
 import { EventResponseDto } from '../dto/event/event-response.dto';
+import { ObjectId } from 'mongodb';
 
-function toEventResponseDto(event: Event): EventResponseDto {
+function toEventResponseDto(event: EventDocument): EventResponseDto {
     return {
-        _id: event._id,
+        _id: event._id.toString(),
         title: event.title,
         type: event.type,
         creatorId: event.creatorId,
@@ -25,6 +26,7 @@ export class EventService {
     constructor(@InjectModel(Event.name) private eventModel: Model<EventDocument>) {}
 
     async create(createDto: CreateEventDto): Promise<EventResponseDto> {
+
         const event = await this.eventModel.create(createDto);
         return toEventResponseDto(event);
     }
@@ -44,7 +46,8 @@ export class EventService {
     }
 
     async findOne(id: string): Promise<EventResponseDto> {
-        const found = await this.eventModel.findById(id);
+        const found = await this.eventModel.findOne({ _id: id });
+        console.log(found);
         if (!found) throw new NotFoundException();
         return toEventResponseDto(found);
     }
@@ -61,13 +64,13 @@ export class EventService {
     }
 
     async activate(id: string): Promise<EventResponseDto> {
-        const updated = await this.eventModel.findByIdAndUpdate(id, { status: "ACTIVE" }, { new: true });
+        const updated = await this.eventModel.findByIdAndUpdate({ _id: id }, { status: "ACTIVE" }, { new: true });
         if (!updated) throw new NotFoundException();
         return toEventResponseDto(updated);
     }
 
     async deactivate(id: string): Promise<EventResponseDto> {
-        const updated = await this.eventModel.findByIdAndUpdate(id, { status: "INACTIVE" }, { new: true });
+        const updated = await this.eventModel.findByIdAndUpdate({ _id: id }, { status: "INACTIVE" }, { new: true });
         if (!updated) throw new NotFoundException();
         return toEventResponseDto(updated);
     }

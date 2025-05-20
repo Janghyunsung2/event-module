@@ -17,6 +17,7 @@ import { Roles } from '../../role/roles.decorator';
 import { Role } from '../../role/role.enum';
 import { RolesGuard } from '../../role/role.guard';
 import {gatewayAxios} from "../../common/gatewayAxios";
+import {AuthGuard} from "@nestjs/passport";
 
 const EVENT_SERVICE_URL = process.env.EVENT_SERVICE_URL || 'http://localhost:3002';
 
@@ -24,6 +25,7 @@ const EVENT_SERVICE_URL = process.env.EVENT_SERVICE_URL || 'http://localhost:300
 @Controller('events/:eventId/rewards')
 export class ProxyRewardController {
     // 리워드 생성
+    @UseGuards(AuthGuard('jwt'))
     @Roles(Role.ADMIN, Role.OPERATOR)
     @Post()
     @HttpCode(HttpStatus.CREATED)
@@ -44,6 +46,7 @@ export class ProxyRewardController {
     }
 
     // 리워드 수정
+    @UseGuards(AuthGuard('jwt'))
     @Roles(Role.ADMIN)
     @Put(':rewardId')
     @HttpCode(HttpStatus.OK)
@@ -57,6 +60,7 @@ export class ProxyRewardController {
     }
 
     // 리워드 삭제
+    @UseGuards(AuthGuard('jwt'))
     @Roles(Role.ADMIN)
     @Delete(':rewardId')
     @HttpCode(HttpStatus.OK)

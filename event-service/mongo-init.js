@@ -3,7 +3,7 @@ db = db.getSiblingDB('eventdb');
 // 1. 이벤트 5개 생성
 const events = [];
 for (let i = 1; i <= 5; i++) {
-  const eventId = ObjectId();
+  const eventId = new ObjectId();
   events.push({
     _id: eventId.str,
     title: `이벤트${i}`,
