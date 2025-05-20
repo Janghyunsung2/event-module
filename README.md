@@ -26,6 +26,11 @@
         - 스웨거에 자물쇠버튼을 누르면 access token을 입력할 수 있는 창이 나옵니다.
         - 스웨거는 gateway서버로 요청을 보내게 구성되어있습니다.(게이트웨이 통하지 않으면 요청이 안됩니다.)
         - 스웨거에서 요청을 보낼 수 있습니다.
+
+### gateway middleware
+    - 게이트웨이를 거쳐야만 event-server, auth-server의 api를 호출할 수 있도록 구성했습니다.
+        - 게이트웨이에 커스텀 axios를 만들어 헤더에 게이트웨이 키값을 보냅니다.
+        - 각 서버에 있는 gateway middleware는 키 값이 일치하는지 확인하고 일치하지 않으면 UnauthorizedException을 발생시킵니다.
 ### jwt 토큰
     - 로그인 시 발급되는 jwt access 토큰을 Authorization 헤더에 Bearer {token} 형식으로 넣으면 됩니다.
     - jwt 토큰은 1시간 후 만료됩니다.(테스트용, 실제로는 더 짧게)
