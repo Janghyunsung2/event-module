@@ -33,7 +33,7 @@
         - 각 서버에 있는 gateway middleware는 키 값이 일치하는지 확인하고 일치하지 않으면 UnauthorizedException을 발생시킵니다.
 ### jwt 토큰
     - 로그인 시 발급되는 jwt access 토큰을 Authorization 헤더에 Bearer {token} 형식으로 넣으면 됩니다.
-    - jwt 토큰은 1시간 후 만료됩니다.(테스트용, 실제로는 더 짧게)
+    - jwt 토큰은 30분 후 만료됩니다.
 
 ### refresh token 전략
     - refresh token은 uuid를 발급해주고 캐시 메모리 uuid를 키로 저장하고 value로 userId를 저장합니다.
